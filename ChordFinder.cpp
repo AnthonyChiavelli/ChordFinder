@@ -3,9 +3,11 @@
 
 using namespace std;
 
+
+
 set<string> findChords (string notes) {
   set<string> noteList = tokenize(notes);
-  
+  set<string> chordNames;
   //Iterator over notes, assuming each is tonic
   for (set<string>::iterator tonic = noteList.begin(); tonic != noteList.end(); ++tonic) {
     //Pattern of intervals between tonic and other notes
@@ -13,15 +15,24 @@ set<string> findChords (string notes) {
     //Iterate over other notes, finding interval to current tonic
     for (set<string>::iterator note = noteList.begin(); note != noteList.end(); ++note) {
       int interval = ((chrIndexOf(*note) - chrIndexOf(*tonic)) + 12 ) % 12;
-      cout << "Int between " + (*tonic) << " ("  << chrIndexOf(*tonic) << ")" << " and " << (*note) << " ( " << chrIndexOf(*note) << ") " <<" : " << interval << endl; 
       pattern.insert(interval);
     }
-    for (set<int>::iterator intv = pattern.begin(); intv != pattern.end(); ++intv) {
-      cout << *intv << " ";
+    //Match to chord pattern library
+    for (map<set<int>, string>::iterator pairs = patternMap.begin(); pairs != patternMap.end(); ++pairs) {
+      if (patternsEqual(pairs->first, pattern)) {
+        chordNames.insert(*tonic + string(" ") + string(pairs->second)); 
+      }
+      else {
+        
+        printSet((pairs->first));
+        cout << " does not match ";
+        printSet(pattern);
+        cout << endl;
+      }
+      
     }
-    cout << endl;
   }
-  return noteList;
+  return chordNames;
 }
 
 static set<string> tokenize (string notes) {
@@ -55,37 +66,47 @@ static int chrIndexOf(string note) {
 
 }
 
-static string noteAtIndex(int index) {
-  switch (index) {
-    case 0:
-      return string("a");
-    case 1:
-      return string("a#");
-    case 2:
-      return string("b");
-    case 3:
-      return string("c");
-    case 4:
-      return string("c#");
-    case 5:
-      return string("d");
-    case 6:
-      return string("d#");
-    case 7:
-      return string("e");
-    case 8:
-      return string("f");
-    case 9:
-      return string("f#");
-    case 10:
-      return string("g");
-    case 11:
-      return string("g#");
+void printSet(set<int> a) {
+  for (set<int>::iterator iter = a.begin(); iter != a.end(); ++iter) {
+    cout << *iter << " ";
   }
 }
 
+int initPatternData() {
+  set<int> major = {0, 4, 7};
+  patternMap[major] = "major";
+  
+  set<int> minor = {0, 3, 7};
+  patternMap[minor] = "minor";
+
+  set<int> sus2 = {0, 2, 7};
+  patternMap[sus2] = "sus2";
+  
+  set<int> sus4 = {0, 5, 7};
+  patternMap[sus4] = "sus4";
+
+  set<int> augmented = {0, 4, 8};
+  patternMap[augmented] = "augmented";
+
+  set<int> major7 = {0, 4, 7, 11};
+  patternMap[major7] = "major7";
+
+  //TODO: add more
+
+
+  return 0; //TODO: fix
+}
+
+static bool patternsEqual(const set<int> &a, const set<int> &b) {
+  return equal(a.begin(), a.end(), b.begin());
+}
+
 int main() {
-  findChords("cdg");
+  initPatternData();
+  set<string> chords = findChords("cdg");
+  for (set<string>::iterator iter = chords.begin(); iter != chords.end(); ++iter) {
+    cout << *iter << endl;
+  }
   return 0;
 }
 
