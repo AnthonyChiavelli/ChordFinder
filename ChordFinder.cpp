@@ -26,10 +26,7 @@ static set<string> tokenize (string notes) {
 }
 
 static int chrIndexOf(string note) {
-  //The index number of the note without accidental
-  //int rootIndex = (note[0] <= 'e') ? 
-  //                  ((note[0] - 'a') * 2):
-  //                  ((note[0] - 'a') * 2) - 1;
+  //Find the index of the note without any accidentals
   int rootIndex = ((note[0] - 'a') * 2) - ((note[0] >= 'c') + (note[0] >= 'f'));
   
   //Increment if there is a sharp sign in the string
@@ -37,21 +34,37 @@ static int chrIndexOf(string note) {
 
 }
 
+static string noteAtIndex(int index) {
+  switch (index) {
+    case 0:
+      return string("A");
+    case 1:
+      return string("A#");
+    case 2:
+      return string("B");
+    case 3:
+      return string("C");
+    case 4:
+      return string("C#");
+    case 5:
+      return string("D");
+    case 6:
+      return string("D#");
+    case 7:
+      return string("E");
+    case 8:
+      return string("F");
+    case 9:
+      return string("F#");
+    case 10:
+      return string("G");
+    case 11:
+      return string("G#");
+  }
+}
 
 int main() {
-  string test("C# DDDbHHggG G#");
-  set<string> notes = tokenize(test);
-  for (set<string>::iterator iter = notes.begin(); iter != notes.end(); ++iter) {
-    cout << *iter << endl;
-  }
 
-  cout << "Index of g#: " << chrIndexOf("g#") << endl;
-  cout << "Index of a: " << chrIndexOf("a") << endl;
-  cout << "Index of a#: " << chrIndexOf("a#") << endl;
-  cout << "Index of b: " << chrIndexOf("b") << endl; 
-  cout << "Index of c: " << chrIndexOf("c") << endl;
-  cout << "Index of d: " << chrIndexOf("d") << endl;
-  cout << "Index of d#: " << chrIndexOf("d#") << endl;
   return 0;
 }
 
