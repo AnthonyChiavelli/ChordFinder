@@ -2,9 +2,19 @@
 #include <boost/regex.hpp>
 using namespace std;
 
+void printSet(set<int> s) {
+  for (auto i = s.begin(); i !=s.end(); cout << *i++);
+}
+
+void printSetS(set<string> s) {
+  for (auto i = s.begin(); i !=s.end(); cout << *i++ << " ");
+}
 set<string> *findChords (string notes) {
   //Get note tokens
   set<string> noteList = tokenize(notes);
+  cout << "note set is ";
+  printSetS(noteList);
+  cout << endl;
   set<string> *chordNames = new set<string>;
   //Iterate over notes, assuming each is tonic
   for (set<string>::iterator tonic = noteList.begin(); tonic != noteList.end(); ++tonic) {
@@ -15,10 +25,19 @@ set<string> *findChords (string notes) {
       int interval = ((chrIndexOf(*note) - chrIndexOf(*tonic)) + 12 ) % 12;
       pattern.insert(interval);
     }
+    cout << "pattern is ";
+    printSet(pattern);
+    cout << endl;
     //Match to chord pattern library
     for (map<set<int>, string>::iterator pairs = patternMap.begin(); pairs != patternMap.end(); ++pairs) {
-      if (patternsEqual(pairs->first, pattern)) 
+      if (patternsEqual(pairs->first, pattern))  {
+        cout << "Match between ";
+        printSet(pairs->first);
+        cout << " and ";
+        printSet(pattern);
+        cout << endl;
         chordNames->insert(*tonic + string(" ") + string(pairs->second)); 
+      }
     }
   }
   return chordNames;
@@ -27,12 +46,13 @@ set<string> *findChords (string notes) {
 static set<string> tokenize (string notes) {
   set<string> *validNotes = new set<string>; 
   //Matches chromatic scale notes
-  static boost::regex validNotesRE("[A-Ga-g][b#]{0,2}"); 
+  static boost::regex validNotesRE("[A-Ga-g][#b]{0,2}"); 
   //End of sequence iterator for later comparison
   boost::regex_token_iterator<string::iterator> eos;
   boost::regex_token_iterator<string::iterator> iter (notes.begin(), notes.end(), validNotesRE, 0);
   //Add all matches to a set
   while (iter != eos) {
+    cout << *iter <<endl;
     string note = *iter++;
     //If lowercase, make uppercase
     if ((note)[0] > 'Z') 
@@ -44,9 +64,16 @@ static set<string> tokenize (string notes) {
 
 static int chrIndexOf(string note) {
   //Find the index of the note without any accidentals
-  int rootIndex = ((note[0] - 'A') * 2) - ((note[0] >= 'C') + (note[0] >= 'F'));
-  //Increment if there is a sharp sign in the string
-  return rootIndex + (note.length() - 1);
+  int index = ((note[0] - 'A') * 2) - ((note[0] >= 'C') + (note[0] >= 'F'));
+  //No accidentals
+  if (note.length() == 1)
+    return index;
+  for (int i = 1; i < note.length(); i++) {
+    //Add or subtract for each accidental
+    if (note[i] == '#') index++;
+    else if (note[i] == 'b') index--;
+  }
+  return index;
 }
 
 int initPatternData() {
@@ -73,7 +100,6 @@ int initPatternData() {
   patternMap[major6] = "major 6";
   set<int> minor6 = {0, 3, 7, 9};
   patternMap[minor6] = "minor 6";
-
 
   //Seventh chords
   set<int> major7 = {0, 4, 7, 11};
