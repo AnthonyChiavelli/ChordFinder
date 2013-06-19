@@ -1,11 +1,11 @@
 #include "ChordFinder.h"
 #include <boost/regex.hpp>
-
 using namespace std;
 
-set<string> findChords (string notes) {
+set<string> *findChords (string notes) {
+  //Get note tokens
   set<string> noteList = tokenize(notes);
-  set<string> chordNames;
+  set<string> *chordNames = new set<string>;
   //Iterator over notes, assuming each is tonic
   for (set<string>::iterator tonic = noteList.begin(); tonic != noteList.end(); ++tonic) {
     //Pattern of intervals between tonic and other notes
@@ -18,7 +18,7 @@ set<string> findChords (string notes) {
     //Match to chord pattern library
     for (map<set<int>, string>::iterator pairs = patternMap.begin(); pairs != patternMap.end(); ++pairs) {
       if (patternsEqual(pairs->first, pattern)) 
-        chordNames.insert(*tonic + string(" ") + string(pairs->second)); 
+        chordNames->insert(*tonic + string(" ") + string(pairs->second)); 
     }
   }
   return chordNames;
@@ -26,21 +26,17 @@ set<string> findChords (string notes) {
 
 static set<string> tokenize (string notes) {
   set<string> *validNotes = new set<string>; 
-  
   //Matches chromatic scale notes
   static boost::regex validNotesRE("[A-Ga-g][b#]{0,2}"); 
-  
   //End of sequence iterator for later comparison
   boost::regex_token_iterator<string::iterator> eos;
   boost::regex_token_iterator<string::iterator> iter (notes.begin(), notes.end(), validNotesRE, 0);
-  
   //Add all matches to a set
   while (iter != eos) {
     string note = *iter++;
-    //If capitalized, make lower case
-    if ((note)[0] < 'a') {
-      (note)[0] += ('a' - 'A');
-    }
+    //If lowercase, make uppercase
+    if ((note)[0] > 'Z') 
+      (note)[0] -= ('a' - 'A');
     validNotes->insert(note);
   }
   return *validNotes;
@@ -48,51 +44,49 @@ static set<string> tokenize (string notes) {
 
 static int chrIndexOf(string note) {
   //Find the index of the note without any accidentals
-  int rootIndex = ((note[0] - 'a') * 2) - ((note[0] >= 'c') + (note[0] >= 'f'));
-  
+  int rootIndex = ((note[0] - 'A') * 2) - ((note[0] >= 'C') + (note[0] >= 'F'));
   //Increment if there is a sharp sign in the string
   return rootIndex + (note.length() - 1);
-
 }
 
-
 int initPatternData() {
+  //Triads
   set<int> major = {0, 4, 7};
   patternMap[major] = "major";
-  
   set<int> minor = {0, 3, 7};
   patternMap[minor] = "minor";
-
-  set<int> sus2 = {0, 2, 7};
-  patternMap[sus2] = "sus2";
-  
-  set<int> sus4 = {0, 5, 7};
-  patternMap[sus4] = "sus4";
-
   set<int> augmented = {0, 4, 8};
   patternMap[augmented] = "augmented";
+  set<int> diminished = {0, 3, 6};
+  patternMap[diminished] = "diminshed";
+  
+  //Triads with suspensions
+  set<int> add9 = {0, 2, 4, 7};
+  patternMap[add9] = "add 9";
+  set<int> sus2 = {0, 2, 7};
+  patternMap[sus2] = "sus 2";
+  set<int> sus4 = {0, 5, 7};
+  patternMap[sus4] = "sus 4";
 
+  //Seventh chords
   set<int> major7 = {0, 4, 7, 11};
-  patternMap[major7] = "major7";
-
+  patternMap[major7] = "major 7";
   set<int> minor7 = {0, 3, 7, 10};
-  patternMap[minor7] = "minor7";
-  
+  patternMap[minor7] = "minor 7";
   set<int> dominant7 = {0, 4, 7, 10};
-  patternMap[dominant7] = "dominant7";
+  patternMap[dominant7] = "dominant 7";
+  set<int> diminished7 = {0, 3, 6, 9};
+  patternMap[diminshed] = "diminished 7";
+  set<int> halfdiminished7 = {0, 3, 6, 10};
+  patternMap[halfdiminshed7] = "half-diminished 7";
+  set<int> minorMajor7 = {0, 3, 7, 11};
+  patternMap[minorMajor7] = "minor major 7";
+  set<int> augmented7= {0, 4, 8, 10};
+  patternMap[augmented7] = "augmented 7";
+  set<int> augmentedMajor7 = {0, 4, 8, 11};
+  patternMap[augmentedMajor7] = "augmented major 7";
 
-  set<int> major6 = {0, 4, 7, 9};
-  patternMap[major6] = "major6";
-  
-  set<int> minor6 = {0, 3, 7, 8};
-  patternMap[minor6] = "minor6";
-
-
-
-  //TODO: add more
-
- 
-  return 0; //TODO: fix
+  return 0; 
 }
 
 static bool patternsEqual(const set<int> &a, const set<int> &b) {
@@ -101,17 +95,20 @@ static bool patternsEqual(const set<int> &a, const set<int> &b) {
   return equal(a.begin(), a.end(), b.begin());
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    cout << "Usage: ChordFinder note1 [note2] [note3] ..." << endl;
+    return 1;
+  }
+  string chordString;
+  //Flatten command line args into a single string
+  for (int i = 1; i < argc; i++) 
+    chordString += string(argv[i]) + " ";
+  //Initialize chord data
   initPatternData();
-  
-  //set<string> chords = findChords("cbebgb bb");
-  for (int i = 0; i < 1000000; i++) 
-    findChords("cbebgb bb");
-
-  //for (set<string>::iterator iter = chords.begin(); iter != chords.end(); ++iter) {
-  //  cout << *iter << endl;
-  //}
+  //Find and print
+  set<string> *notes = findChords(chordString);
+  for (set<string>::iterator iter = notes->begin(); iter != notes->end(); ++iter) 
+    cout << *iter << endl;
   return 0;
 }
-
-

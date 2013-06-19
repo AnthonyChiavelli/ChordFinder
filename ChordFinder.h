@@ -11,7 +11,7 @@ map<set<int>, string> patternMap;
 /* Returns a set of strings, each naming a chord formed
  * by combining the notes, given as a string
  */
-set<string> findChords (string notes);
+set<string> *findChords (string notes);
 
 /* Takes a string of notes and produces a set of properly
  * formatted (i.e. sharps only) strings representing notes
