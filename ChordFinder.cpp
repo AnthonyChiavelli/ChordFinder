@@ -6,7 +6,7 @@ set<string> *findChords (string notes) {
   //Get note tokens
   set<string> noteList = tokenize(notes);
   set<string> *chordNames = new set<string>;
-  //Iterator over notes, assuming each is tonic
+  //Iterate over notes, assuming each is tonic
   for (set<string>::iterator tonic = noteList.begin(); tonic != noteList.end(); ++tonic) {
     //Pattern of intervals between tonic and other notes
     set<int> pattern;
@@ -69,9 +69,9 @@ int initPatternData() {
   patternMap[sus4] = "sus 4";
 
   //Sixth chords
-  set<int> major6 = {0, 4, 7, 10};
+  set<int> major6 = {0, 4, 7, 9};
   patternMap[major6] = "major 6";
-  set<int> minor6 = {0, 3, 7, 10};
+  set<int> minor6 = {0, 3, 7, 9};
   patternMap[minor6] = "minor 6";
 
 
@@ -83,9 +83,9 @@ int initPatternData() {
   set<int> dominant7 = {0, 4, 7, 10};
   patternMap[dominant7] = "dominant 7";
   set<int> diminished7 = {0, 3, 6, 9};
-  patternMap[diminshed] = "diminished 7";
+  patternMap[diminished7] = "diminished 7";
   set<int> halfdiminished7 = {0, 3, 6, 10};
-  patternMap[halfdiminshed7] = "half-diminished 7";
+  patternMap[halfdiminished7] = "half-diminished 7";
   set<int> minorMajor7 = {0, 3, 7, 11};
   patternMap[minorMajor7] = "minor major 7";
   set<int> augmented7= {0, 4, 8, 10};
