@@ -68,6 +68,13 @@ int initPatternData() {
   set<int> sus4 = {0, 5, 7};
   patternMap[sus4] = "sus 4";
 
+  //Sixth chords
+  set<int> major6 = {0, 4, 7, 10};
+  patternMap[major6] = "major 6";
+  set<int> minor6 = {0, 3, 7, 10};
+  patternMap[minor6] = "minor 6";
+
+
   //Seventh chords
   set<int> major7 = {0, 4, 7, 11};
   patternMap[major7] = "major 7";
