@@ -3,8 +3,6 @@
 
 using namespace std;
 
-
-
 set<string> findChords (string notes) {
   set<string> noteList = tokenize(notes);
   set<string> chordNames;
@@ -19,17 +17,8 @@ set<string> findChords (string notes) {
     }
     //Match to chord pattern library
     for (map<set<int>, string>::iterator pairs = patternMap.begin(); pairs != patternMap.end(); ++pairs) {
-      if (patternsEqual(pairs->first, pattern)) {
+      if (patternsEqual(pairs->first, pattern)) 
         chordNames.insert(*tonic + string(" ") + string(pairs->second)); 
-      }
-      else {
-        
-        printSet((pairs->first));
-        cout << " does not match ";
-        printSet(pattern);
-        cout << endl;
-      }
-      
     }
   }
   return chordNames;
@@ -66,11 +55,6 @@ static int chrIndexOf(string note) {
 
 }
 
-void printSet(set<int> a) {
-  for (set<int>::iterator iter = a.begin(); iter != a.end(); ++iter) {
-    cout << *iter << " ";
-  }
-}
 
 int initPatternData() {
   set<int> major = {0, 4, 7};
@@ -91,22 +75,42 @@ int initPatternData() {
   set<int> major7 = {0, 4, 7, 11};
   patternMap[major7] = "major7";
 
+  set<int> minor7 = {0, 3, 7, 10};
+  patternMap[minor7] = "minor7";
+  
+  set<int> dominant7 = {0, 4, 7, 10};
+  patternMap[dominant7] = "dominant7";
+
+  set<int> major6 = {0, 4, 7, 9};
+  patternMap[major6] = "major6";
+  
+  set<int> minor6 = {0, 3, 7, 8};
+  patternMap[minor6] = "minor6";
+
+
+
   //TODO: add more
 
-
+ 
   return 0; //TODO: fix
 }
 
 static bool patternsEqual(const set<int> &a, const set<int> &b) {
+  if (a.size() != b.size())
+    return false;
   return equal(a.begin(), a.end(), b.begin());
 }
 
 int main() {
   initPatternData();
-  set<string> chords = findChords("cdg");
-  for (set<string>::iterator iter = chords.begin(); iter != chords.end(); ++iter) {
-    cout << *iter << endl;
-  }
+  
+  //set<string> chords = findChords("cbebgb bb");
+  for (int i = 0; i < 1000000; i++) 
+    findChords("cbebgb bb");
+
+  //for (set<string>::iterator iter = chords.begin(); iter != chords.end(); ++iter) {
+  //  cout << *iter << endl;
+  //}
   return 0;
 }
 

@@ -32,5 +32,3 @@ static int initPatternData();
 /* Tests two note patterns for equality */
 static bool patternsEqual(const set<int>&, const set<int>&);
 
-/* TODO: remove */
-void printSet(set<int>);
