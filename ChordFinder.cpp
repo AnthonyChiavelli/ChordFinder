@@ -2,19 +2,9 @@
 #include <boost/regex.hpp>
 using namespace std;
 
-void printSet(set<int> s) {
-  for (auto i = s.begin(); i !=s.end(); cout << *i++);
-}
-
-void printSetS(set<string> s) {
-  for (auto i = s.begin(); i !=s.end(); cout << *i++ << " ");
-}
 set<string> *findChords (string notes) {
   //Get note tokens
   set<string> noteList = tokenize(notes);
-  cout << "note set is ";
-  printSetS(noteList);
-  cout << endl;
   set<string> *chordNames = new set<string>;
   //Iterate over notes, assuming each is tonic
   for (set<string>::iterator tonic = noteList.begin(); tonic != noteList.end(); ++tonic) {
@@ -25,17 +15,9 @@ set<string> *findChords (string notes) {
       int interval = ((chrIndexOf(*note) - chrIndexOf(*tonic)) + 12 ) % 12;
       pattern.insert(interval);
     }
-    cout << "pattern is ";
-    printSet(pattern);
-    cout << endl;
     //Match to chord pattern library
     for (map<set<int>, string>::iterator pairs = patternMap.begin(); pairs != patternMap.end(); ++pairs) {
       if (patternsEqual(pairs->first, pattern))  {
-        cout << "Match between ";
-        printSet(pairs->first);
-        cout << " and ";
-        printSet(pattern);
-        cout << endl;
         chordNames->insert(*tonic + string(" ") + string(pairs->second)); 
       }
     }
@@ -52,7 +34,6 @@ static set<string> tokenize (string notes) {
   boost::regex_token_iterator<string::iterator> iter (notes.begin(), notes.end(), validNotesRE, 0);
   //Add all matches to a set
   while (iter != eos) {
-    cout << *iter <<endl;
     string note = *iter++;
     //If lowercase, make uppercase
     if ((note)[0] > 'Z') 
